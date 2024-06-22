@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{pageTitle}}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            min-width: 240px;
+        }
+
+        hr {
+            margin: 1em 0;
+            border: none;
+            border-top: 1px solid black;
+        }
+
+        form input {
+            padding: 1em;
+            border: 1px solid grey;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        button:hover {
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0 5px;
+        }
+
+        table th {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        {{{body}}}
+    </main>
+</body>
+
+</html>

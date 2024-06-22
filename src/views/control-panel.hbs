@@ -1,0 +1,118 @@
+<style>
+    .control-panel form {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .control-panel form input {
+        margin-right: 1em;
+    }
+
+    .control-panel table {
+        width: 100%;
+    }
+
+    button.btn-delete {
+        color: #dc3545;
+        background-color: transparent;
+        padding: 0;
+    }
+
+    button.btn-logout {
+        background-color: transparent;
+        padding: 0;
+        color: black;
+        position: absolute;
+        top: 1em;
+        right: 2em;
+    }
+</style>
+
+<section class="control-panel">
+    <button id="btn-logout" class="btn-logout">Logout</button>
+    <h2>Manage Users</h2>
+    <div>
+        <form id="form-create-account" action="api/v1/auth/create-account" method="post">
+            <input type="text" name="fullName" placeholder="Full Name" minlength="2" required>
+            <input type="email" name="email" placeholder="Email" minlength="2" required>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+    <hr>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="user-list">
+            {{#each users}}
+            <tr>
+                <td>{{this.fullName}}</td>
+                <td>{{this.email}}</td>
+                <td>
+                    {{#if (eq this.role 'user')}}
+                    <form id="form-delete-account-{{@index}}" action="api/v1/auth/delete-account" method="post">
+                        <input type="hidden" name="id" value="{{this.id}}">
+                        <button class="btn-delete" type="submit">Delete</button>
+                    </form>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</section>
+
+<script>
+    const btnLogout = document.getElementById('btn-logout');
+    const formCreateAccount = document.getElementById('form-create-account');
+    const formsDeleteAccount = document.querySelectorAll('[id^="form-delete-account-"]');
+
+    btnLogout.addEventListener('click', () => {
+        fetch('/api/v1/auth/logout', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            window.location.reload();
+        });
+    });
+
+    formCreateAccount.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        handleFormSubmit(formCreateAccount, '/control-panel')
+    });
+
+    formsDeleteAccount.forEach((form) => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            handleFormSubmit(form, '/control-panel');
+        })
+    });
+
+    async function handleFormSubmit(form, redirectUrl) {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch(form.action, {
+            method: form.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            window.location.href = redirectUrl;
+        } else {
+            alert(result.message);
+        }
+    }
+</script>

@@ -1,0 +1,52 @@
+<style>
+    .verify-account form {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .verify-account form input {
+        margin-bottom: 1em;
+    }
+</style>
+
+<section class="verify-account">
+    <h3>Please create a new unique password</h3>
+    <form id="form-verify" action="/api/v1/auth/verify" method="post">
+        <input type="hidden" name="token" value="{{token}}" />
+        <input type="password" name="password" placeholder="Password" minlength="8" required />
+        <input type="password" name="passwordConfirm" placeholder="Confirm password" minlength="8" required />
+        <button type="submit">Confirm</button>
+    </form>
+</section>
+
+<script>
+    const formVerify = document.getElementById('form-verify');
+
+    formVerify.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        handleFormSubmit(formVerify, '/success')
+    });
+
+    // TODO: this method already exists in control-panel, reuse it
+    async function handleFormSubmit(form, redirectUrl) {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch(form.action, {
+            method: form.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            window.location.href = redirectUrl;
+        } else {
+            alert(result.message);
+        }
+    }
+</script>

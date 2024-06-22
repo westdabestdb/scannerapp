@@ -1,0 +1,51 @@
+<style>
+    .login form {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .login form input {
+        margin-bottom: 1em;
+    }
+</style>
+
+<section class="login">
+    <h3>Login to B4Y Scanning</h3>
+    <form id="form-login" action="/api/v1/auth/login" method="post">
+        <input type="text" name="email" placeholder="Email" minlength="5" required>
+        <input type="password" name="password" placeholder="Password" minlength="8" required />
+        <button type="submit">Login</button>
+    </form>
+</section>
+
+<script>
+    const formLogin = document.getElementById('form-login');
+
+    formLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        handleFormSubmit(formLogin, '/control-panel')
+    });
+
+    // TODO: this method already exists in control-panel, reuse it
+    async function handleFormSubmit(form, redirectUrl) {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch(form.action, {
+            method: form.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            window.location.href = redirectUrl;
+        } else {
+            alert(result.message);
+        }
+    }
+</script>
